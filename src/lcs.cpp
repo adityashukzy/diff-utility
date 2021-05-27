@@ -9,13 +9,12 @@
 #define GREEN   "\033[32m" // Green
 #define YELLOW  "\033[33m" // Yellow
 #define BOLDWHITE   "\033[1m\033[37m" // Bold White
-using namespace std;
 
 // Defining a struct for all the attributes of the longest common subsequence
 struct longestCommonSubsequence {
 	int n, m;
 	ll int lcs_length;
-	string lcs_string;
+	std::string lcs_string;
 
 	longestCommonSubsequence(int n, int m)
 	{
@@ -27,12 +26,12 @@ struct longestCommonSubsequence {
 // Adding a short-hand for longestCommmonSubsequence to just lcsStruct
 typedef struct longestCommonSubsequence lcsStruct;
 
-lcsStruct computeLCS(string text1, string text2) {
+lcsStruct computeLCS(std::string text1, std::string text2) {
 	int m = text1.length(); // columns
 	int n = text2.length(); // rows
 
 	lcsStruct lcs(n, m);
-	vector<vector<int> > dp_matrix(n, vector<int> (m));
+	std::vector<std::vector<int> > dp_matrix(n, std::vector<int> (m));
 	
 	for(int i = 0; i < lcs.n+1; i++)
 	{
@@ -87,7 +86,7 @@ lcsStruct computeLCS(string text1, string text2) {
 	return lcs;
 }
 
-bool presentInLCS(string str, char character)
+bool presentInLCS(std::string str, char character)
 {
 	// Perform search for the character in the LCS string
 	int i = 0, n = str.length();
@@ -103,10 +102,10 @@ bool presentInLCS(string str, char character)
 	return false;
 }
 
-void printDiff(string lcs, string oldFile, string newFile)
+void printDiff(std::string lcs, std::string oldFile, std::string newFile)
 {
 	// Deletions (items present in oldFile but not present in LCS)
-	string deletions = "";
+	std::string deletions = "";
 
 	int old_len = oldFile.length();
 	for(int i = 0; i < old_len; i++)
@@ -118,7 +117,7 @@ void printDiff(string lcs, string oldFile, string newFile)
 	}
 
 	// Insertions (items present in newFile but not present in LCS)
-	string insertions = "";
+	std::string insertions = "";
 	int new_len = newFile.length();
 	for(int i = 0; i < new_len; i++)
 	{
@@ -128,46 +127,46 @@ void printDiff(string lcs, string oldFile, string newFile)
 		}
 	}
 
-	cout << BLUE << "Deletions: " << RED;
+	std::cout << BLUE << "Deletions: " << RED;
 	int del_len = deletions.length();
 	for(int i = 0; i < del_len; i++)
 	{
-		cout << " -" << deletions[i];
+		std::cout << " -" << deletions[i];
 	}
 
-	cout << BLUE << endl << "Insertions: " << GREEN;
+	std::cout << BLUE << std::endl << "Insertions: " << GREEN;
 	int ins_len = insertions.length();
 	for(int i = 0; i < ins_len; i++)
 	{
-		cout << " +" << insertions[i];
+		std::cout << " +" << insertions[i];
 	}
-	cout << RESET << endl;
+	std::cout << RESET << std::endl;
 }
 
-void printLcsMatrix(vector<vector<int> > dp_matrix)
+void printLcsMatrix(std::vector<std::vector<int> > dp_matrix)
 {
-	cout << "DP Matrix: " << endl;
+	std::cout << "DP Matrix: " << std::endl;
 	for(int i = 0; i < dp_matrix.size()+1; i++)
 	{
 		for(int j = 0; j < dp_matrix[0].size()+1; j++)
 		{
-			cout << dp_matrix[i][j] << " ";
+			std::cout << dp_matrix[i][j] << " ";
 		}
-		cout << endl;
+		std::cout << std::endl;
 	}
 }
 
 int main()
 {
-	string text1, text2;
-	cout << "Enter string 1: ";
-	cin >> text1;
+	std::string text1, text2;
+	std::cout << "Enter string 1: ";
+	std::cin >> text1;
 
-	cout << "Enter string 2: ";
-	cin >> text2;
+	std::cout << "Enter string 2: ";
+	std::cin >> text2;
 
 	lcsStruct lcs = computeLCS(text1, text2);
-	cout << endl << BOLDWHITE << "Longest Common Subsequence is: " << YELLOW << lcs.lcs_string << RESET << endl;
+	std::cout << std::endl << BOLDWHITE << "Longest Common Subsequence is: " << YELLOW << lcs.lcs_string << RESET << std::endl;
 	printDiff(lcs.lcs_string, text1, text2);
 	return 0;
 }
