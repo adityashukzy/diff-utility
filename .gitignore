@@ -4,6 +4,9 @@
 # Prerequisites
 *.d
 
+# macOS-specific files
+*.DS_Store
+
 # Compiled Object files
 *.slo
 *.lo
@@ -30,6 +33,7 @@
 *.lib
 
 # Executables
+*.bin
 *.exe
 *.out
 *.app
