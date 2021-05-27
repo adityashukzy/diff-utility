@@ -1,68 +1,84 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#define ll long long
+#define RESET   "\033[0m"
+#define BLACK   "\033[30m" // Black
+#define BLUE    "\033[34m" // Blue
+#define RED     "\033[31m" // Red
+#define GREEN   "\033[32m" // Green
+#define YELLOW  "\033[33m" // Yellow
+#define BOLDWHITE   "\033[1m\033[37m" // Bold White
 using namespace std;
 
-string longestCommonSubsequence(string text1, string text2) {
+// Defining a struct for all the attributes of the longest common subsequence
+struct longestCommonSubsequence {
+	int n, m;
+	ll int lcs_length;
+	string lcs_string;
+
+	longestCommonSubsequence(int n, int m)
+	{
+		n = n;
+		m = m;
+	}
+};
+
+// Adding a short-hand for longestCommmonSubsequence to just lcsStruct
+typedef struct longestCommonSubsequence lcsStruct;
+
+lcsStruct computeLCS(string text1, string text2) {
 	int m = text1.length(); // columns
 	int n = text2.length(); // rows
-	int dp[n+1][m+1];
+
+	lcsStruct lcs(n, m);
+	vector<vector<int> > dp_matrix(n, vector<int> (m));
 	
-	for(int i = 0; i < n+1; i++)
+	for(int i = 0; i < lcs.n+1; i++)
 	{
-		for(int j = 0; j < m+1; j++)
+		for(int j = 0; j < lcs.m+1; j++)
 		{
 			if(i == 0 or j == 0)
 			{
-				dp[i][j] = 0;
+				dp_matrix[i][j] = 0;
 				continue;
 			}
 			else if(text1[j-1] == text2[i-1])
 			{
 				// add 1 to diagonally top-left element
-				dp[i][j] = dp[i-1][j-1] + 1;
+				dp_matrix[i][j] = dp_matrix[i-1][j-1] + 1;
 			}
 			else if(text1[j-1] != text2[i-1])
 			{
 				// take the maximum of left and above element
-				dp[i][j] = std::max(dp[i][j-1], dp[i-1][j]);
+				dp_matrix[i][j] = std::max(dp_matrix[i][j-1], dp_matrix[i-1][j]);
 			}
 		}
 	}
-	
-	// cout << "DP Matrix: " << endl;
-	// for(int i = 0; i < n+1; i++)
-	// {
-	// 	for(int j = 0; j <= m; j++)
-	// 	{
-	// 		cout << dp[i][j] << " ";
-	// 	}
-	// 	cout << endl;
-	// }
 
 	// Length of LCS
-	// cout << "Length of LCS: " << dp[n][m] << endl;
+	lcs.lcs_length = dp_matrix[lcs.n][lcs.m];
 
 	// Building LCS
-	int tracker[2] = {n, m};
-	string lcs = "";
+	int tracker[2] = {lcs.n, lcs.m};
 
 	while(tracker[0] != 0 or tracker[1] != 0)
 	{
 		int x = tracker[0];
 		int y = tracker[1];
-		int current = dp[x][y];
+		int current = dp_matrix[x][y];
 
-		if(current == dp[x][y-1]) // equal to left element
+		if(current == dp_matrix[x][y-1]) // equal to left element
 		{
 			tracker[1] -= 1;
 		}
-		else if(current == dp[x-1][y]) // equal to top element
+		else if(current == dp_matrix[x-1][y]) // equal to top element
 		{
 			tracker[0] -= 1;
 		}
 		else
 		{
-			lcs.insert(lcs.begin(), text1[y-1]);
+			lcs.lcs_string.insert(lcs.lcs_string.begin(), text1[y-1]);
 			tracker[0] -= 1;
 			tracker[1] -= 1;
 		}
@@ -74,8 +90,9 @@ string longestCommonSubsequence(string text1, string text2) {
 bool presentInLCS(string str, char character)
 {
 	// Perform search for the character in the LCS string
-	int i = 0;
-	while(i < str.length())
+	int i = 0, n = str.length();
+
+	while(i < n)
 	{
 		if(str[i] == character)
 			return true;
@@ -91,7 +108,8 @@ void printDiff(string lcs, string oldFile, string newFile)
 	// Deletions (items present in oldFile but not present in LCS)
 	string deletions = "";
 
-	for(int i = 0; i < oldFile.length(); i++)
+	int old_len = oldFile.length();
+	for(int i = 0; i < old_len; i++)
 	{
 		if(!presentInLCS(lcs, oldFile[i]))
 		{
@@ -101,8 +119,8 @@ void printDiff(string lcs, string oldFile, string newFile)
 
 	// Insertions (items present in newFile but not present in LCS)
 	string insertions = "";
-
-	for(int i = 0; i < newFile.length(); i++)
+	int new_len = newFile.length();
+	for(int i = 0; i < new_len; i++)
 	{
 		if(!presentInLCS(lcs, newFile[i]))
 		{
@@ -110,18 +128,33 @@ void printDiff(string lcs, string oldFile, string newFile)
 		}
 	}
 
-	cout << "Deletions: ";
-	for(int i = 0; i < deletions.length(); i++)
+	cout << BLUE << "Deletions: " << RED;
+	int del_len = deletions.length();
+	for(int i = 0; i < del_len; i++)
 	{
 		cout << " -" << deletions[i];
 	}
 
-	cout << endl << "Insertions: ";
-	for(int i = 0; i < insertions.length(); i++)
+	cout << BLUE << endl << "Insertions: " << GREEN;
+	int ins_len = insertions.length();
+	for(int i = 0; i < ins_len; i++)
 	{
 		cout << " +" << insertions[i];
 	}
-	cout << endl;
+	cout << RESET << endl;
+}
+
+void printLcsMatrix(vector<vector<int> > dp_matrix)
+{
+	cout << "DP Matrix: " << endl;
+	for(int i = 0; i < dp_matrix.size()+1; i++)
+	{
+		for(int j = 0; j < dp_matrix[0].size()+1; j++)
+		{
+			cout << dp_matrix[i][j] << " ";
+		}
+		cout << endl;
+	}
 }
 
 int main()
@@ -133,8 +166,8 @@ int main()
 	cout << "Enter string 2: ";
 	cin >> text2;
 
-	string lcs = longestCommonSubsequence(text1, text2);
-	cout << endl << "Longest Common Subsequence is: " << lcs << endl;
-	printDiff(lcs, text1, text2);
+	lcsStruct lcs = computeLCS(text1, text2);
+	cout << endl << BOLDWHITE << "Longest Common Subsequence is: " << YELLOW << lcs.lcs_string << RESET << endl;
+	printDiff(lcs.lcs_string, text1, text2);
 	return 0;
 }
